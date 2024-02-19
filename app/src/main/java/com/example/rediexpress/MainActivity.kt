@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun RediExpressNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()

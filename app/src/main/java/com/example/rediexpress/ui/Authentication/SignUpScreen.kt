@@ -1,5 +1,6 @@
 package com.example.rediexpress.ui.Authentication
 
+import android.content.Context
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -39,10 +41,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rediexpress.R
+import com.example.rediexpress.ui.Authentication.viewmodel.SignUpViewModel
 import com.example.rediexpress.ui.theme.PrimaryColor
 import com.example.rediexpress.ui.theme.TextColor1
 import com.example.rediexpress.ui.theme.TextColor4
@@ -80,6 +84,10 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
     val isConfrimPasswordVisible = remember {
         mutableStateOf(false)
     }
+
+    val signUpViewModel: SignUpViewModel = viewModel()
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -344,6 +352,7 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
         Button(
             onClick = {
                 onClick()
+                signUpViewModel.SignUp(context, emailAddress, password)
             }, colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
             shape = RoundedCornerShape(4.69.dp),
             modifier = Modifier

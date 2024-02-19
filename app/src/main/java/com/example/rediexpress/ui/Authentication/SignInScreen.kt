@@ -34,7 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rediexpress.R
+import com.example.rediexpress.ui.Authentication.viewmodel.SignInViewModel
 import com.example.rediexpress.ui.theme.PrimaryColor
 import com.example.rediexpress.ui.theme.TextColor1
 import com.example.rediexpress.ui.theme.TextColor4
@@ -56,6 +58,8 @@ fun SignInScreen(modifier: Modifier = Modifier) {
     var isChecked by remember {
         mutableStateOf(false)
     }
+
+    val signInViewModel: SignInViewModel = viewModel()
 
     Column(
         modifier = Modifier
