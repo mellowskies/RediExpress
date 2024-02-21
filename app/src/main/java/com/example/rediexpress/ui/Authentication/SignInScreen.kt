@@ -1,5 +1,8 @@
 package com.example.rediexpress.ui.Authentication
 
+import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -25,7 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -36,13 +44,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rediexpress.R
+import com.example.rediexpress.ui.Authentication.utils.validateEmail
 import com.example.rediexpress.ui.Authentication.viewmodel.SignInViewModel
 import com.example.rediexpress.ui.theme.PrimaryColor
 import com.example.rediexpress.ui.theme.TextColor1
 import com.example.rediexpress.ui.theme.TextColor4
+import com.example.rediexpress.ui.theme.WarningColor
 
 @Composable
-fun SignInScreen(modifier: Modifier = Modifier) {
+fun SignInScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
 
     var emailAddress by remember {
         mutableStateOf("")
@@ -61,15 +71,15 @@ fun SignInScreen(modifier: Modifier = Modifier) {
 
     val signInViewModel: SignInViewModel = viewModel()
 
+    val context = LocalContext.current
+
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
         Column(
-            modifier = Modifier
-                .padding(top = 110.dp, start = 24.dp),
+            modifier = Modifier.padding(top = 110.dp, start = 24.dp),
         ) {
             Text(
                 text = "Welcome Back",
@@ -88,8 +98,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                 color = TextColor4
             )
             Column(
-                modifier = Modifier
-                    .padding(top = 33.dp)
+                modifier = Modifier.padding(top = 33.dp)
             ) {
                 Text(
                     text = "Email Address",
@@ -120,8 +129,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                 )
             }
             Column(
-                modifier = Modifier
-                    .padding(top = 33.dp)
+                modifier = Modifier.padding(top = 33.dp)
             ) {
                 Text(
                     text = "Password",
@@ -131,8 +139,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                     lineHeight = 16.sp,
                     color = TextColor4
                 )
-                OutlinedTextField(
-                    value = password,
+                OutlinedTextField(value = password,
                     onValueChange = { password = it },
                     modifier = Modifier
                         .padding(top = 8.dp)
@@ -163,8 +170,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                                 modifier = Modifier
                             )
                         }
-                    }
-                )
+                    })
             }
             Row(
                 modifier = Modifier
@@ -174,8 +180,9 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
-                    checked = false, onCheckedChange = {
-                        isChecked = !isChecked
+                    checked = isChecked,
+                    onCheckedChange = {
+                        isChecked = it
                     },
                     modifier = Modifier
                         .width(14.dp)
@@ -193,8 +200,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp),
+                        modifier = Modifier.padding(horizontal = 4.dp),
                         text = "Remember Password",
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
@@ -202,8 +208,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                         color = TextColor4
                     )
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp),
+                        modifier = Modifier.padding(horizontal = 4.dp),
                         text = "Forgot Password?",
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
@@ -214,11 +219,90 @@ fun SignInScreen(modifier: Modifier = Modifier) {
             }
         }
     }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 24.dp, bottom = 189.dp),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.Start
+    ) {
+        Button(
+            onClick = {
+                if (validateEmail(emailAddress)) {
+                    signInViewModel.signIn(context, emailAddress, password)
+                    onClick()
+                } else {
+                    Toast.makeText(context, "Email Is Invalid", Toast.LENGTH_SHORT).show()
+                }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+            shape = RoundedCornerShape(4.69.dp),
+            modifier = Modifier
+                .width(342.dp)
+                .height(46.dp)
+        ) {
+            Text(
+                text = "Log In",
+                color = Color.White,
+                fontWeight = FontWeight(700),
+                fontSize = 16.sp
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    pushStyle(
+                        style = SpanStyle(
+                            color = TextColor4,
+                        )
+                    )
+                    append("Already Signed Up?")
+                    pushStyle(
+                        style = SpanStyle(
+                            color = PrimaryColor,
+                            fontWeight = FontWeight(500)
+                        )
+                    )
+                    append(" Sign In")
+                },
+                fontWeight = FontWeight(400),
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .clickable {
+                        // TODO:
+                    }
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            Text(
+                text = "or sign in using",
+                fontWeight = FontWeight(400),
+                fontSize = 14.sp,
+                color = TextColor4
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            IconButton(onClick = {
+                // TODO:
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.google_icon),
+                    contentDescription = "",
+                    tint = WarningColor,
+                    modifier = Modifier
+                )
+            }
+        }
+    }
+
 }
 
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 private fun SignInPreview() {
-    SignInScreen()
+    SignInScreen {}
 }

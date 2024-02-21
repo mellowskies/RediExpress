@@ -1,18 +1,20 @@
 package com.example.rediexpress.ui.Authentication
 
-import android.content.Context
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -42,10 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.rediexpress.R
+import com.example.rediexpress.ui.Authentication.utils.validateEmail
 import com.example.rediexpress.ui.Authentication.viewmodel.SignUpViewModel
 import com.example.rediexpress.ui.theme.PrimaryColor
 import com.example.rediexpress.ui.theme.TextColor1
@@ -81,7 +81,7 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
     val isPasswordVisible = remember {
         mutableStateOf(false)
     }
-    val isConfrimPasswordVisible = remember {
+    val isConfirmPasswordVisible = remember {
         mutableStateOf(false)
     }
 
@@ -92,17 +92,15 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .scrollable(state = scrollState, orientation = Orientation.Vertical),
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
     ) {
-
-
         Column(
             modifier = Modifier
-                .padding(top = 33.dp, start = 24.dp),
+                .padding(top = 33.dp, start = 24.dp)
 
-            ) {
+        ) {
             Text(
                 text = "Create An Account",
                 textAlign = TextAlign.Center,
@@ -293,10 +291,10 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
                     shape = RoundedCornerShape(4.dp),
 
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = if (isConfrimPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (isConfirmPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = {
-                            isConfrimPasswordVisible.value = !isConfrimPasswordVisible.value
+                            isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value
                         }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.eye_slash),
@@ -308,9 +306,8 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
                     }
                 )
             }
+            Spacer(modifier = Modifier.height(37.dp))
             Row(
-                modifier = Modifier
-                    .padding(top = 37.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -327,6 +324,7 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
                         .height(14.dp)
                 )
                 Text(
+                    modifier = Modifier.width(294.dp),
                     text = buildAnnotatedString {
                         pushStyle(
                             style = SpanStyle(
@@ -349,33 +347,89 @@ fun SignUpScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
                 )
             }
         }
-        Button(
-            onClick = {
-                onClick()
-                signUpViewModel.SignUp(context, emailAddress, password)
-            }, colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-            shape = RoundedCornerShape(4.69.dp),
+        Spacer(modifier = Modifier.height(64.dp))
+
+        Column(
             modifier = Modifier
-                .width(342.dp)
-                .height(46.dp)
+                .padding(start = 24.dp),
         ) {
-            Text(
-                text = "Sign Up",
-                color = Color.White,
-                fontWeight = FontWeight(700),
-                fontSize = 16.sp
-            )
+            Button(
+                onClick = {
+                    if (validateEmail(emailAddress)) {
+                        onClick()
+                        signUpViewModel.SignUp(context, emailAddress, password)
+                    } else {
+                        Toast.makeText(context, "Email Is Invalid!", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                shape = RoundedCornerShape(4.69.dp),
+                modifier = Modifier
+                    .width(342.dp)
+                    .height(46.dp)
+            ) {
+                Text(
+                    text = "Sign Up",
+                    color = Color.White,
+                    fontWeight = FontWeight(700),
+                    fontSize = 16.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        pushStyle(
+                            style = SpanStyle(
+                                color = TextColor4,
+                            )
+                        )
+                        append("Already Signed Up?")
+                        pushStyle(
+                            style = SpanStyle(
+                                color = PrimaryColor,
+                                fontWeight = FontWeight(500)
+                            )
+                        )
+                        append(" Sign In")
+                    },
+                    fontWeight = FontWeight(400),
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .clickable {
+                            // TODO:
+                        }
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+                Text(
+                    text = "or sign in using",
+                    fontWeight = FontWeight(400),
+                    fontSize = 14.sp,
+                    color = TextColor4
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                IconButton(onClick = {
+                    // TODO:
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.google_icon),
+                        contentDescription = "",
+                        tint = WarningColor,
+                        modifier = Modifier
+                    )
+                }
+            }
         }
     }
 }
 
-@Composable
-fun NavigateToSignIn(modifier: Modifier = Modifier) {
 
-}
-
-@Preview
+@Preview(showBackground = true, heightDp = 1800)
 @Composable
-private fun SignUpScreenPreivew() {
-    SignUpScreen(){}
+private fun SignUpScreenPreview() {
+    SignUpScreen {}
 }

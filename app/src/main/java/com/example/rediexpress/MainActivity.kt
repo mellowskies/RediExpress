@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rediexpress.ui.Authentication.SignInScreen
 import com.example.rediexpress.ui.Authentication.SignUpScreen
+import com.example.rediexpress.ui.home.HomeMainScreen
 import com.example.rediexpress.ui.onboarding.OnboardingScreen
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +31,8 @@ class MainActivity : ComponentActivity() {
             )
         )
         setContent {
-            RediExpressNavigation()
+//            RediExpressNavigation()
+            HomeMainScreen()
         }
     }
 }
@@ -56,7 +58,14 @@ fun RediExpressNavigation(modifier: Modifier = Modifier) {
         }
 
         composable("signin_screen") {
-            SignInScreen()
+            SignInScreen(){
+                navController.navigate("home_screen"){
+                    popUpTo("home_screen")
+                }
+            }
+        }
+        composable("home_screen"){
+            HomeMainScreen()
         }
     }
 }
